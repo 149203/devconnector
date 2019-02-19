@@ -9,6 +9,9 @@ const jwt = require('jsonwebtoken')
 const keys = require('../../config/keys')
 const passport = require('passport')
 
+// Import input validation
+const validate_register_input = require('../../validation/register')
+
 // @route   GET api/users/test
 // @desc    Tests the users route
 // @access  Public
@@ -18,13 +21,21 @@ router.get('/test', (req, res) => res.json({ msg: 'Users works!' })) // we want 
 // @desc    Registers user
 // @access  Public
 router.post('/register', (req, res) => {
+   // Validate before looking up in db
+   const { errors, is_valid } = validate_register_input(req.body)
+   if (!is_valid) {
+      console.log(errors)
+      return res.status(400).json(errors)
+   }
+
    // find One is a mongoose method, body is created with body-parser package and setup in server.js
    User.findOne({ email: req.body.email }).then(user => {
       if (user) {
-         return res.status(400).json({
-            email: 'Email already exists.',
-         }) // throw an error: user is already registered
+         console.log('THIS USER EXISTS')
+         errors.email = 'Email already exists.'
+         return res.status(400).json(errors)
       } else {
+         console.log('HELLO NEW USER')
          const { name, email, password } = req.body
          const avatar = gravatar.url(email, {
             s: '200', // size: 200px
