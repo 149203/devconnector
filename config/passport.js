@@ -10,11 +10,11 @@ options.secretOrKey = keys.jwt_secret
 
 module.exports = passport => {
    passport.use(
-      new jwt_strategy(options, (jwt_payload, done) => {
+      new jwt_strategy(options, (jwt_payload, is_done) => {
          User.findById(jwt_payload.id)
             .then(user => {
-               if (user) return done(null, user)
-               return done(null, false)
+               if (user) return is_done(null, user)
+               else return is_done(null, false)
             })
             .catch(err => console.log(err))
       })
