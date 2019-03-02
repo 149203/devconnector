@@ -24,7 +24,7 @@ router.post('/register', (req, res) => {
    // Validate before looking up in db
    const { errors, is_valid } = validate_register_input(req.body)
    if (!is_valid) {
-      console.log(errors)
+      console.log(errors, is_valid)
       return res.status(400).json(errors)
    }
 
