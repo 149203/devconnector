@@ -8,9 +8,8 @@ const bcrypt = require('bcryptjs') // to encrypt user passwords
 const jwt = require('jsonwebtoken')
 const keys = require('../../config/keys')
 const passport = require('passport')
-
-// Import input validation
 const validate_register_input = require('../../validation/register')
+const validate_login_input = require('../../validation/login')
 
 // @route   GET api/users/test
 // @desc    Tests the users route
@@ -68,11 +67,22 @@ router.post('/register', (req, res) => {
 // @desc    Login user / Return web token
 // @access  Public
 router.post('/login', (req, res) => {
+   // Validate before looking up in db
+   const { errors, is_valid } = validate_login_input(req.body)
+   if (!is_valid) {
+      console.log(errors, is_valid)
+      return res.status(400).json(errors)
+   }
+
    const { email, password } = req.body
+
    // Find the user by email
    User.findOne({ email }).then(user => {
       // Check email
-      if (!user) res.status(404).json({ email: 'User not found' })
+      if (!user) {
+         errors.email = 'User not found!'
+         res.status(404).json({ errors })
+      }
       // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
          if (isMatch) {
@@ -95,7 +105,8 @@ router.post('/login', (req, res) => {
                }
             ) // imported from config file!!
          } else {
-            return res.status(400).json({ password: 'Incorrect password' })
+            errors.password = 'Incorrect password!'
+            return res.status(400).json(errors)
          }
       })
    })
