@@ -10,6 +10,7 @@ const User = require('../../models/User')
 const validate_profile_input = require('../../validation/profile')
 const validate_experience_input = require('../../validation/experience')
 const validate_education_input = require('../../validation/education')
+const _filter = require('lodash/filter')
 
 // @route   GET api/profile
 // @desc    Get current user's profile
@@ -237,6 +238,52 @@ router.post(
             // Add to education array in the profile
             profile.education.unshift(newEdu) // add to top of array
             // Save and return whole profile
+            profile
+               .save()
+               .then(profile => res.json(profile))
+               .catch(err => res.status(400).json(err))
+         })
+         .catch(err => res.status(400).json(err))
+   }
+)
+
+// @route   DELETE api/profile/experience/:exp_id
+// @desc    Delete an experience object from profile
+// @access  Private
+router.delete(
+   '/experience/:exp_id',
+   passport.authenticate('jwt', { session: false }),
+   (req, res) => {
+      Profile.findOne({ user: req.user.id })
+         .then(profile => {
+            // remove the experience object with an id of :exp_id from the experience array
+            profile.experience = _filter(profile.experience, experience => {
+               return String(experience._id) !== req.params.exp_id
+            })
+
+            profile
+               .save()
+               .then(profile => res.json(profile))
+               .catch(err => res.status(400).json(err))
+         })
+         .catch(err => res.status(400).json(err))
+   }
+)
+
+// @route   DELETE api/profile/education/:edu_id
+// @desc    Delete an education object from profile
+// @access  Private
+router.delete(
+   '/education/:edu_id',
+   passport.authenticate('jwt', { session: false }),
+   (req, res) => {
+      Profile.findOne({ user: req.user.id })
+         .then(profile => {
+            // remove the education object with an id of :edu_id from the education array
+            profile.education = _filter(profile.education, education => {
+               return String(education._id) !== req.params.edu_id
+            })
+
             profile
                .save()
                .then(profile => res.json(profile))
