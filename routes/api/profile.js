@@ -18,6 +18,8 @@ router.get(
    (req, res) => {
       const errors = {}
       Profile.findOne({ user: req.user.id })
+         .populate('user', ['name', 'avatar']) // populates this query with the user name and avatar
+         // works because of the definition of user in the Profile schema as a referenced MongoID.
          .then(profile => {
             if (!profile) {
                errors.no_profile = 'There is no profile for this user!'
