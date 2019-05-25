@@ -8,6 +8,8 @@ const passport = require('passport')
 const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const validate_profile_input = require('../../validation/profile')
+const validate_experience_input = require('../../validation/experience')
+const validate_education_input = require('../../validation/education')
 
 // @route   GET api/profile
 // @desc    Get current user's profile
@@ -29,6 +31,57 @@ router.get(
          .catch(err => res.status(404).json(err))
    }
 )
+
+// @route   GET api/profile/handle/:handle
+// @desc    Get profile by handle
+// @access  Public
+router.get('/handle/:handle', (req, res) => {
+   const errors = {}
+   Profile.findOne({ handle: req.params.handle })
+      .populate('user', ['name', 'avatar'])
+      .then(profile => {
+         if (!profile) {
+            errors.noprofile = 'There is no profile for this user.'
+            return res.status(400).json(errors)
+         }
+         return res.json(profile)
+      })
+      .catch(err => res.status(404).json(err))
+})
+
+// @route   GET api/profile/user/:user_id
+// @desc    Get profile by user ID
+// @access  Public
+router.get('/user/:user_id', (req, res) => {
+   const errors = {}
+   Profile.findOne({ user: req.params.user_id })
+      .populate('user', ['name', 'avatar'])
+      .then(profile => {
+         if (!profile) {
+            errors.noprofile = 'There is no profile for this user.'
+            return res.status(400).json(errors)
+         }
+         return res.json(profile)
+      })
+      .catch(err => res.status(404).json(err))
+})
+
+// @route   GET api/profile/all
+// @desc    Get all profiles
+// @access  Public
+router.get('/all', (req, res) => {
+   const errors = {}
+   Profile.find()
+      .populate('user', ['name', 'avatar'])
+      .then(profiles => {
+         if (!profiles) {
+            errors.noprofile = 'There are no profiles.'
+            return res.status(400).json(errors)
+         }
+         return res.json(profiles)
+      })
+      .catch(err => res.status(404).json(err))
+})
 
 // @route   POST api/profile
 // @desc    Create or update user profile
@@ -100,6 +153,94 @@ router.post(
                   })
                   .catch(err => res.status(400).json(err))
             }
+         })
+         .catch(err => res.status(400).json(err))
+   }
+)
+
+// @route   POST api/profile/experience
+// @desc    Add experience to profile
+// @access  Private
+router.post(
+   '/experience',
+   passport.authenticate('jwt', { session: false }),
+   (req, res) => {
+      const { errors, is_valid } = validate_experience_input(req.body)
+      if (!is_valid) {
+         return res.status(400).json(errors)
+      }
+
+      const {
+         title,
+         company,
+         location,
+         from,
+         to,
+         current,
+         description,
+      } = req.body
+      Profile.findOne({ user: req.user.id })
+         .then(profile => {
+            const newExp = {
+               title,
+               company,
+               location,
+               from,
+               to,
+               current,
+               description,
+            }
+            // Add to experience array in the profile
+            profile.experience.unshift(newExp) // add to top of array
+            // Save and return whole profile
+            profile
+               .save()
+               .then(profile => res.json(profile))
+               .catch(err => res.status(400).json(err))
+         })
+         .catch(err => res.status(400).json(err))
+   }
+)
+
+// @route   POST api/profile/education
+// @desc    Add education to profile
+// @access  Private
+router.post(
+   '/education',
+   passport.authenticate('jwt', { session: false }),
+   (req, res) => {
+      const { errors, is_valid } = validate_education_input(req.body)
+      if (!is_valid) {
+         return res.status(400).json(errors)
+      }
+
+      const {
+         school,
+         degree,
+         fieldofstudy,
+         from,
+         to,
+         current,
+         description,
+      } = req.body
+      Profile.findOne({ user: req.user.id })
+         .then(profile => {
+            const newEdu = {
+               school,
+               degree,
+               fieldofstudy,
+               from,
+               to,
+               current,
+               description,
+            }
+            // Add to education array in the profile
+            profile.education.unshift(newEdu) // add to top of array
+            // Save and return whole profile
+            profile
+               .save()
+               .then(profile => res.json(profile))
+               .catch(err => res.status(400).json(err))
          })
          .catch(err => res.status(400).json(err))
    }
