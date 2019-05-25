@@ -79,31 +79,34 @@ router.post('/login', (req, res) => {
          res.status(404).json({ errors })
       }
       // Check password
-      bcrypt.compare(password, user.password).then(isMatch => {
-         if (isMatch) {
-            // user email and password matched
+      bcrypt
+         .compare(password, user.password)
+         .then(isMatch => {
+            if (isMatch) {
+               // user email and password matched
 
-            // Create the payload
-            const { id, name, avatar } = user
-            const payload = { id, name, avatar }
+               // Create the payload
+               const { id, name, avatar } = user
+               const payload = { id, name, avatar }
 
-            // Sign the token
-            jwt.sign(
-               payload,
-               keys.jwt_secret,
-               { expiresIn: 3600 },
-               (err, token) => {
-                  res.json({
-                     success: true,
-                     token: 'Bearer ' + token, // Makes it a Bearer token
-                  })
-               }
-            ) // imported from config file!!
-         } else {
-            errors.password = 'Incorrect password!'
-            return res.status(400).json(errors)
-         }
-      })
+               // Sign the token
+               jwt.sign(
+                  payload,
+                  keys.jwt_secret,
+                  { expiresIn: 3600 },
+                  (err, token) => {
+                     res.json({
+                        success: true,
+                        token: 'Bearer ' + token, // Makes it a Bearer token
+                     })
+                  }
+               ) // imported from config file!!
+            } else {
+               errors.password = 'Incorrect password!'
+               return res.status(400).json(errors)
+            }
+         })
+         .catch(err => res.status(404).json(err))
    })
 })
 
