@@ -11,11 +11,6 @@ const passport = require('passport')
 const validate_register_input = require('../../validation/register')
 const validate_login_input = require('../../validation/login')
 
-// @route   GET api/users/test
-// @desc    Tests the users route
-// @access  Public
-router.get('/test', (req, res) => res.json({ msg: 'Users works!' })) // we want our API to serve JSON
-
 // @route   POST api/users/register
 // @desc    Registers user
 // @access  Public

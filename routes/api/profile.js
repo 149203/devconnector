@@ -9,11 +9,6 @@ const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const validate_profile_input = require('../../validation/profile')
 
-// @route   GET api/profile/test
-// @desc    Tests the profile route
-// @access  Public
-router.get('/test', (req, res) => res.json({ msg: 'Profile works!' }))
-
 // @route   GET api/profile
 // @desc    Get current user's profile
 // @access  Private
@@ -47,57 +42,64 @@ router.post(
          return res.status(400).json(errors)
       }
 
-      // Get all profile fields
-      // Create an object
-      const profile_fields = {}
+      const profile_obj = {}
       // If the field exists in the request, add it to the object
       const body = req.body
-      profile_fields.user = req.user.id
-      if (body.handle) profile_fields.handle = body.handle
-      if (body.company) profile_fields.company = body.company
-      if (body.website) profile_fields.website = body.website
-      if (body.location) profile_fields.location = body.location
-      if (body.bio) profile_fields.bio = body.bio
-      if (body.status) profile_fields.status = body.status
-      if (body.githubusername)
-         profile_fields.githubusername = body.githubusername
+      profile_obj.user = req.user.id
+      if (body.handle) profile_obj.handle = body.handle
+      if (body.company) profile_obj.company = body.company
+      if (body.website) profile_obj.website = body.website
+      if (body.location) profile_obj.location = body.location
+      if (body.bio) profile_obj.bio = body.bio
+      if (body.status) profile_obj.status = body.status
+      if (body.githubusername) profile_obj.githubusername = body.githubusername
 
       // Skills - split CSV into array
       if (typeof body.skills !== 'undefined') {
-         profile_fields.skills = body.skills.split(',')
+         profile_obj.skills = body.skills.split(',')
       }
 
       // Social
-      profile_fields.social = {} // initialize obj to avoid error
-      if (body.youtube) profile_fields.social.youtube = body.youtube
-      if (body.twitter) profile_fields.social.twitter = body.twitter
-      if (body.facebook) profile_fields.social.facebook = body.facebook
-      if (body.linkedin) profile_fields.social.linkedin = body.linkedin
-      if (body.instagram) profile_fields.social.instagram = body.instagram
+      profile_obj.social = {} // initialize obj to avoid error
+      if (body.youtube) profile_obj.social.youtube = body.youtube
+      if (body.twitter) profile_obj.social.twitter = body.twitter
+      if (body.facebook) profile_obj.social.facebook = body.facebook
+      if (body.linkedin) profile_obj.social.linkedin = body.linkedin
+      if (body.instagram) profile_obj.social.instagram = body.instagram
 
-      Profile.findOne({ user: req.user.id }).then(profile => {
-         if (profile) {
-            // Update profile
-            Profile.findOneAndUpdate(
-               { user: req.user.id },
-               { $set: profile_fields },
-               { new: true }
-            ).then(profile => res.json(profile))
-         } else {
-            // Create profile
-            // Check if handle exists
-            Profile.findOne({ handle: profile_fields.handle }).then(profile => {
-               if (profile) {
-                  errors.handle = 'That handle already exists'
-                  res.status(400).json(errors)
-               } else {
-                  new Profile(profile_fields).save().then(profile => {
-                     res.json(profile)
+      Profile.findOne({ user: req.user.id })
+         .then(profile => {
+            if (profile) {
+               console.log('profile found')
+               // Update profile
+               Profile.findOneAndUpdate(
+                  { user: req.user.id },
+                  { $set: profile_obj },
+                  { new: true }
+               ).then(profile => res.json(profile))
+            } else {
+               // Create profile
+               // Check if handle exists
+               Profile.findOne({ handle: profile_obj.handle })
+                  .then(profile => {
+                     if (profile) {
+                        errors.handle = 'That handle already exists'
+                        res.status(400).json(errors)
+                     } else {
+                        console.log(profile_obj)
+                        // TODO: WHY ISN'T THIS SAVING MY PROFILE FIELDS?
+                        new Profile(profile_obj)
+                           .save()
+                           .then(profile => {
+                              res.json(profile)
+                           })
+                           .catch(err => res.status(400).json(err))
+                     }
                   })
-               }
-            })
-         }
-      })
+                  .catch(err => res.status(400).json(err))
+            }
+         })
+         .catch(err => res.status(400).json(err))
    }
 )
 
