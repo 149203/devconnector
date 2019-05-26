@@ -172,4 +172,6 @@ router.post('/unlike/:id', verify_user_is_logged_in, (req, res) => {
       )
 })
 
+// TODO: Section 5.5 - Add & Remove Comment Routes
+
 module.exports = router
