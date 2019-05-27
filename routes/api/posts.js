@@ -172,6 +172,58 @@ router.post('/unlike/:id', verify_user_is_logged_in, (req, res) => {
       )
 })
 
-// TODO: Section 5.5 - Add & Remove Comment Routes
+// @route   POST api/posts/comment/:id
+// @desc    Comment on a post by post ID
+// @access  Private
+router.post('/comment/:id', verify_user_is_logged_in, (req, res) => {
+   const { errors, is_valid } = validate_post_input(req.body)
+   if (!is_valid) {
+      return res.status(400).json(errors)
+   }
+   const { text, name, avatar } = req.body
+   const user = req.user.id
+
+   Post.findById(req.params.id)
+      .then(post => {
+         const new_comment = { text, name, avatar, user }
+         post.comments.unshift(new_comment)
+         post.save().then(post => res.json(post))
+      })
+      .catch(err => res.status(404).json({ postnotfound: 'No post found.' }))
+})
+
+// @route   DELETE api/posts/comment/:post_id/:comment_id
+// @desc    Delete a comment from a post
+// @access  Private
+router.delete(
+   '/comment/:post_id/:comment_id',
+   verify_user_is_logged_in,
+   (req, res) => {
+      const user = req.user.id
+      const comment_id = req.params.comment_id
+
+      Post.findById(req.params.post_id)
+         .then(post => {
+            const comment_ids = _map(post.comments, comment =>
+               String(comment._id)
+            )
+            // if comment exists
+            if (!_includes(comment_ids, comment_id)) {
+               res.status(400).json({
+                  commentnotfound: "This comment doesn't exist for this post.",
+               })
+            }
+            // TODO: if comment user is the logged in user
+            else {
+               post.comments = _filter(
+                  post.comments,
+                  comment => String(comment._id) !== comment_id
+               )
+               post.save().then(post => res.json(post))
+            }
+         })
+         .catch(err => res.status(404).json({ postnotfound: 'No post found.' }))
+   }
+)
 
 module.exports = router
