@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 
 export default class Register extends Component {
    constructor() {
@@ -21,6 +22,11 @@ export default class Register extends Component {
       const { name, email, password, password2 } = this.state
       const new_user = { name, email, password, password2 }
       console.log(new_user)
+      // axios POST!
+      axios
+         .post('/api/users/register', new_user) // recall we put a PROXY value in our client package.json
+         .then(res => console.log(res.data))
+         .catch(err => console.log(err.response.data))
    }
 
    render() {
