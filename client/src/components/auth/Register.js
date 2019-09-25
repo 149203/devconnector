@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import axios from 'axios'
+import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import { register_user } from '../../actions/authActions'
@@ -17,6 +17,15 @@ class Register extends Component {
       }
    }
 
+   componentWillReceiveProps(nextProps) {
+      // deprecated way of passing props into component state
+      // once we receive new properties, update component state
+      if (nextProps.errors) {
+         // if there is errors
+         this.setState({ errors: nextProps.errors })
+      }
+   }
+
    onChange(e) {
       this.setState({ [e.target.name]: e.target.value }) // shorthand for a variable property name!
    }
@@ -25,21 +34,13 @@ class Register extends Component {
       e.preventDefault() // because this is a form
       const { name, email, password, password2 } = this.state
       const new_user = { name, email, password, password2 }
-      this.props.register_user(new_user)
-      // console.log(new_user)
-      // axios POST!
-      // axios
-      //    .post('/api/users/register', new_user) // recall we put a PROXY value in our client package.json
-      //    .then(res => console.log(res.data))
-      //    .catch(err => this.setState({ errors: err.response.data }))
+      this.props.register_user(new_user, this.props.history) // use new_user data and this.props.history in the register_user action // uses withRouter at the bottom of the page
    }
 
    render() {
       const { errors } = this.state
-      const { user } = this.props.auth
       return (
          <div className="register">
-            {user ? user.name : null}
             <div className="container">
                <div className="row">
                   <div className="col-md-8 m-auto">
@@ -145,13 +146,14 @@ class Register extends Component {
 Register.propTypes = {
    register_user: PropTypes.func.isRequired,
    auth: PropTypes.object.isRequired,
+   errors: PropTypes.object.isRequired,
 } // Type-checking in React (optional)
 
 const map_state_to_props = state => ({
    auth: state.auth, // we named auth in our root reducer (reducers/index.js)
+   errors: state.errors,
 }) // wrap the return in () to use arrow function syntax for return shortcut
-
 export default connect(
    map_state_to_props,
    { register_user }
-)(Register)
+)(withRouter(Register))
