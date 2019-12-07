@@ -19,8 +19,8 @@
       "express": "^4.16.4",
       "gravatar": "^1.8.0",
       "jsonwebtoken": "^8.4.0",
-      "lodash": "^4.17.11",
-      "mongoose": "^5.4.5",
+      "lodash": "^4.17.15",
+      "mongoose": "^5.7.14",
       "passport": "^0.4.0",
       "passport-jwt": "^4.0.0",
       "validator": "^10.11.0"
