@@ -17,6 +17,13 @@ class Register extends Component {
       }
    }
 
+   componentDidMount() {
+      // if we are directed to this component and we are already logged in:
+      if (this.props.auth.is_authenticated) {
+         this.props.history.push('/dashboard')
+      }
+   }
+
    componentWillReceiveProps(nextProps) {
       // deprecated way of passing props into component state
       // once we receive new properties, update component state
@@ -153,7 +160,6 @@ const map_state_to_props = state => ({
    auth: state.auth, // we named auth in our root reducer (reducers/index.js)
    errors: state.errors,
 }) // wrap the return in () to use arrow function syntax for return shortcut
-export default connect(
-   map_state_to_props,
-   { register_user }
-)(withRouter(Register))
+export default connect(map_state_to_props, { register_user })(
+   withRouter(Register)
+)

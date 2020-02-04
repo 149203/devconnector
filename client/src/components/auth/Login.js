@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux' // allows connecting redux to this react component
+import { login_user } from '../../actions/authActions'
 import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
-import { login_user } from '../../actions/authActions'
 
 class Login extends Component {
    constructor() {
@@ -12,6 +12,13 @@ class Login extends Component {
          email: '',
          password: '',
          errors: {},
+      }
+   }
+
+   componentDidMount() {
+      // if we are directed to this component and we are already logged in:
+      if (this.props.auth.is_authenticated) {
+         this.props.history.push('/dashboard')
       }
    }
 

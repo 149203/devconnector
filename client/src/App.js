@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import jwt_decode from 'jwt-decode'
 import set_auth_token from './utils/set_auth_token'
-import { set_current_user } from './actions/authActions'
+import { set_current_user, logout_user } from './actions/authActions'
 import { Provider } from 'react-redux' // provides our application with a store, it has to wrap around everything
 import store from './store'
 
@@ -19,6 +19,12 @@ if (token) {
    set_auth_token(token)
    const decoded = jwt_decode(token)
    store.dispatch(set_current_user(decoded)) // dispatches the "set_current_user" action
+   const current_time = Date.now() / 1000
+   if (decoded.exp < current_time) {
+      store.dispatch(logout_user())
+      // TODO: Clear current profile
+      window.location.href = '/login'
+   }
 }
 
 function App() {

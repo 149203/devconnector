@@ -1,7 +1,15 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux' // allows connecting redux to this react component
 
-export default class Landing extends Component {
+class Landing extends Component {
+   componentDidMount() {
+      // if we are directed to this component and we are already logged in:
+      if (this.props.auth.is_authenticated) {
+         this.props.history.push('/dashboard')
+      }
+   }
    render() {
       return (
          <div className="landing">
@@ -33,3 +41,12 @@ export default class Landing extends Component {
       )
    }
 }
+
+Landing.propTypes = {
+   auth: PropTypes.object.isRequired,
+} // Type-checking in React (optional)
+
+const map_state_to_props = state => ({
+   auth: state.auth, // we named auth in our root reducer (reducers/index.js)
+}) // wrap the return in () to use arrow function syntax for return shortcut
+export default connect(map_state_to_props)(Landing)
