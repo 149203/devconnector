@@ -1,12 +1,27 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux' // allows connecting redux to this react component
+import { withRouter } from 'react-router-dom'
+import classnames from 'classnames'
+import { login_user } from '../../actions/authActions'
 
-export default class Login extends Component {
+class Login extends Component {
    constructor() {
       super()
       this.state = {
          email: '',
          password: '',
          errors: {},
+      }
+   }
+
+   componentWillReceiveProps(nextProps) {
+      if (nextProps.auth.is_authenticated) {
+         this.props.history.push('/dashboard') // if authenticated, direct to dashboard
+      }
+
+      if (nextProps.errors) {
+         this.setState({ errors: nextProps.errors })
       }
    }
 
@@ -17,11 +32,14 @@ export default class Login extends Component {
    onSubmit(e) {
       e.preventDefault() // because this is a form
       const { email, password } = this.state
-      const user = { email, password }
-      console.log(user)
+      const user_data = { email, password }
+      console.log(user_data)
+      this.props.login_user(user_data)
    }
 
    render() {
+      const { errors } = this.state
+
       return (
          <div className="login">
             <div className="container">
@@ -35,22 +53,38 @@ export default class Login extends Component {
                         <div className="form-group">
                            <input
                               type="email"
-                              className="form-control form-control-lg"
+                              className={classnames(
+                                 'form-control form-control-lg',
+                                 { 'is-invalid': errors.email }
+                              )}
                               placeholder="Email Address"
                               name="email"
                               value={this.state.email}
                               onChange={e => this.onChange(e)}
                            />
+                           {errors.email && ( // if errors.email
+                              <div className="invalid-feedback">
+                                 {errors.email}
+                              </div>
+                           )}
                         </div>
                         <div className="form-group">
                            <input
                               type="password"
-                              className="form-control form-control-lg"
+                              className={classnames(
+                                 'form-control form-control-lg',
+                                 { 'is-invalid': errors.password }
+                              )}
                               placeholder="Password"
                               name="password"
                               value={this.state.password}
                               onChange={e => this.onChange(e)}
                            />
+                           {errors.password && ( // if errors.password
+                              <div className="invalid-feedback">
+                                 {errors.password}
+                              </div>
+                           )}
                         </div>
                         <input
                            type="submit"
@@ -64,3 +98,15 @@ export default class Login extends Component {
       )
    }
 }
+
+Login.propTypes = {
+   login_user: PropTypes.func.isRequired,
+   auth: PropTypes.object.isRequired,
+   errors: PropTypes.object.isRequired,
+} // Type-checking in React (optional)
+
+const map_state_to_props = state => ({
+   auth: state.auth,
+   errors: state.errors,
+}) // wrap the return in () to use arrow function syntax for return shortcut
+export default connect(map_state_to_props, { login_user })(Login)
