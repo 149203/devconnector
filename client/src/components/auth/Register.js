@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import { register_user } from '../../actions/authActions'
+import TextFieldGroup from '../common/TextFieldGroup'
 
 class Register extends Component {
    constructor() {
@@ -59,84 +60,43 @@ class Register extends Component {
                         noValidate // noValidate turns off HTML5 validation
                         onSubmit={e => this.onSubmit(e)}
                      >
-                        <div className="form-group">
-                           <input
-                              type="text"
-                              // classnames param 1 = default classNames
-                              // classnames param 2 = className IF property is true
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.name }
-                              )}
-                              placeholder="Name"
-                              name="name"
-                              value={this.state.name}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.name && ( // if errors.name
-                              <div className="invalid-feedback">
-                                 {errors.name}
-                              </div>
-                           )}
-                        </div>
-                        <div className="form-group">
-                           <input
-                              type="email"
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.email }
-                              )}
-                              placeholder="Email Address"
-                              name="email"
-                              value={this.state.email}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.email && ( // if errors.email
-                              <div className="invalid-feedback">
-                                 {errors.email}
-                              </div>
-                           )}
-                           <small className="form-text text-muted">
-                              This site uses Gravatar so if you want a profile
-                              image, use a Gravatar email
-                           </small>
-                        </div>
-                        <div className="form-group">
-                           <input
-                              type="password"
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.password }
-                              )}
-                              placeholder="Password"
-                              name="password"
-                              value={this.state.password}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.password && ( // if errors.password
-                              <div className="invalid-feedback">
-                                 {errors.password}
-                              </div>
-                           )}
-                        </div>
-                        <div className="form-group">
-                           <input
-                              type="password"
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.password2 }
-                              )}
-                              placeholder="Confirm Password"
-                              name="password2"
-                              value={this.state.password2}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.password2 && ( // if errors.password2
-                              <div className="invalid-feedback">
-                                 {errors.password2}
-                              </div>
-                           )}
-                        </div>
+                        <TextFieldGroup
+                           placeholder="Name"
+                           name="name"
+                           type="text"
+                           error={errors.name}
+                           value={this.state.name}
+                           onChange={e => this.onChange(e)}
+                        />
+
+                        <TextFieldGroup
+                           placeholder="Email Address"
+                           name="email"
+                           type="email"
+                           error={errors.email}
+                           value={this.state.email}
+                           onChange={e => this.onChange(e)}
+                           info="Please use a Gravatar email address if you have one."
+                        />
+
+                        <TextFieldGroup
+                           placeholder="Password"
+                           name="password"
+                           type="password"
+                           error={errors.password}
+                           value={this.state.password}
+                           onChange={e => this.onChange(e)}
+                        />
+
+                        <TextFieldGroup
+                           placeholder="Confirm Password"
+                           name="password2"
+                           type="password"
+                           error={errors.password2}
+                           value={this.state.password2}
+                           onChange={e => this.onChange(e)}
+                        />
+
                         <input
                            type="submit"
                            className="btn btn-info btn-block mt-4"

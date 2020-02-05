@@ -4,6 +4,7 @@ import { connect } from 'react-redux' // allows connecting redux to this react c
 import { login_user } from '../../actions/authActions'
 import { withRouter } from 'react-router-dom'
 import classnames from 'classnames'
+import TextFieldGroup from '../common/TextFieldGroup'
 
 class Login extends Component {
    constructor() {
@@ -57,42 +58,24 @@ class Login extends Component {
                         Sign in to your DevConnector account
                      </p>
                      <form onSubmit={e => this.onSubmit(e)}>
-                        <div className="form-group">
-                           <input
-                              type="email"
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.email }
-                              )}
-                              placeholder="Email Address"
-                              name="email"
-                              value={this.state.email}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.email && ( // if errors.email
-                              <div className="invalid-feedback">
-                                 {errors.email}
-                              </div>
-                           )}
-                        </div>
-                        <div className="form-group">
-                           <input
-                              type="password"
-                              className={classnames(
-                                 'form-control form-control-lg',
-                                 { 'is-invalid': errors.password }
-                              )}
-                              placeholder="Password"
-                              name="password"
-                              value={this.state.password}
-                              onChange={e => this.onChange(e)}
-                           />
-                           {errors.password && ( // if errors.password
-                              <div className="invalid-feedback">
-                                 {errors.password}
-                              </div>
-                           )}
-                        </div>
+                        <TextFieldGroup
+                           placeholder="Email address"
+                           name="email"
+                           type="email"
+                           error={errors.email}
+                           value={this.state.email}
+                           onChange={e => this.onChange(e)}
+                        />
+
+                        <TextFieldGroup
+                           placeholder="Password"
+                           name="password"
+                           type="password"
+                           error={errors.password}
+                           value={this.state.password}
+                           onChange={e => this.onChange(e)}
+                        />
+
                         <input
                            type="submit"
                            className="btn btn-info btn-block mt-4"
