@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import { logout_user } from '../../actions/authActions'
+import { clear_current_profile } from '../../actions/profileActions'
 
 class Navbar extends Component {
    on_logout_click(e) {
       e.preventDefault()
+      this.props.clear_current_profile()
       this.props.logout_user()
    }
 
@@ -91,4 +93,7 @@ const map_state_to_props = state => ({
    auth: state.auth,
 })
 
-export default connect(map_state_to_props, { logout_user })(Navbar)
+export default connect(map_state_to_props, {
+   logout_user,
+   clear_current_profile,
+})(Navbar)
