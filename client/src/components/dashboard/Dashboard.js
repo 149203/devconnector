@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import { get_current_profile } from '../../actions/profileActions'
+import Spinner from '../common/Spinner'
+import { Link } from 'react-router-dom'
 
 class Dashboard extends Component {
    componentDidMount() {
@@ -9,12 +11,53 @@ class Dashboard extends Component {
    }
 
    render() {
-      return <div></div>
+      const { user } = this.props.auth
+      const { loading, profile } = this.props.profile
+
+      let dashboard_content
+      if (profile === null || loading === true) {
+         dashboard_content = <Spinner />
+      } else {
+         if (Object.keys(profile).length > 0) {
+            dashboard_content = <h4>DISPLAY PROFILE</h4>
+         } else {
+            // User is logged in, but has no profile
+            dashboard_content = (
+               <div>
+                  <p className="lead text-muted">Welcome {user.name}</p>
+                  <p>You have not yet created a profile.</p>
+                  <Link to="/create-profile" className="btn btn-lg btn-info">
+                     Create a profile
+                  </Link>
+               </div>
+            )
+         }
+      }
+
+      return (
+         <div className="dashboard">
+            <div className="container">
+               <div className="row">
+                  <div className="col-md-12">
+                     <h1 className="display-4">Dashboard</h1>
+                     {dashboard_content}
+                  </div>
+               </div>
+            </div>
+         </div>
+      )
    }
 }
 
-Dashboard.propTypes = {}
+Dashboard.propTypes = {
+   get_current_profile: PropTypes.func.isRequired,
+   auth: PropTypes.object.isRequired,
+   profile: PropTypes.object.isRequired,
+}
 
-const map_state_to_props = state => ({})
+const map_state_to_props = state => ({
+   profile: state.profile,
+   auth: state.auth,
+})
 
 export default connect(map_state_to_props, { get_current_profile })(Dashboard)
