@@ -1,11 +1,12 @@
 import React from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import jwt_decode from 'jwt-decode'
 import set_auth_token from './utils/set_auth_token'
 import { set_current_user, logout_user } from './actions/authActions'
 import { clear_current_profile } from './actions/profileActions'
 import { Provider } from 'react-redux' // provides our application with a store, it has to wrap around everything
 import store from './store'
+import PrivateRoute from './components/common/PrivateRoute'
 
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
@@ -39,7 +40,14 @@ function App() {
                <div className="container">
                   <Route exact path="/register" component={Register} />
                   <Route exact path="/login" component={Login} />
-                  <Route exact path="/dashboard" component={Dashboard} />
+                  <Switch>
+                     {/* Switch prevents strange redirect issues with our custom PrivateRoute component*/}
+                     <PrivateRoute
+                        exact
+                        path="/dashboard"
+                        component={Dashboard}
+                     />
+                  </Switch>
                </div>
                <Footer />
             </div>
