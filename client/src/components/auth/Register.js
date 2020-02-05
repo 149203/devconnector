@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
-import classnames from 'classnames'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import { register_user } from '../../actions/authActions'
 import TextFieldGroup from '../common/TextFieldGroup'
