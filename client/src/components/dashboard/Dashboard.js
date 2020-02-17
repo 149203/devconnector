@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux' // allows connecting redux to this react component
-import { get_current_profile } from '../../actions/profileActions'
+import {
+   get_current_profile,
+   delete_account,
+} from '../../actions/profileActions'
 import Spinner from '../common/Spinner'
 import { Link } from 'react-router-dom'
+import ProfileActions from './ProfileActions'
 
 class Dashboard extends Component {
    componentDidMount() {
       this.props.get_current_profile()
+   }
+   on_delete_click(e) {
+      this.props.delete_account()
    }
 
    render() {
@@ -19,7 +26,23 @@ class Dashboard extends Component {
          dashboard_content = <Spinner />
       } else {
          if (Object.keys(profile).length > 0) {
-            dashboard_content = <h4>DISPLAY PROFILE</h4>
+            dashboard_content = (
+               <div>
+                  <p className="lead text-muted">
+                     Welcome{' '}
+                     <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
+                  </p>
+                  <ProfileActions />
+                  {/* TODO: Experience & Education */}
+                  <div style={{ marginTop: '60px' }}></div>
+                  <button
+                     className="btn btn-danger"
+                     onClick={e => this.on_delete_click(e)}
+                  >
+                     Delete my account
+                  </button>
+               </div>
+            )
          } else {
             // User is logged in, but has no profile
             dashboard_content = (
@@ -51,6 +74,7 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
    get_current_profile: PropTypes.func.isRequired,
+   delete_account: PropTypes.func.isRequired,
    auth: PropTypes.object.isRequired,
    profile: PropTypes.object.isRequired,
 }
@@ -60,4 +84,7 @@ const map_state_to_props = state => ({
    auth: state.auth,
 })
 
-export default connect(map_state_to_props, { get_current_profile })(Dashboard)
+export default connect(map_state_to_props, {
+   get_current_profile,
+   delete_account,
+})(Dashboard)
