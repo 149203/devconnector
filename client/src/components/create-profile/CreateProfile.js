@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import TextFieldGroup from '../common/TextFieldGroup'
 import TextAreaFieldGroup from '../common/TextAreaFieldGroup'
 import InputGroup from '../common/InputGroup'
 import SelectListGroup from '../common/SelectListGroup'
+import { create_profile } from '../../actions/profileActions'
 
 class CreateProfile extends Component {
    constructor(props) {
@@ -28,9 +30,47 @@ class CreateProfile extends Component {
       }
    }
 
+   componentWillReceiveProps(next_props) {
+      if (next_props.errors) {
+         this.setState({ errors: next_props.errors })
+      }
+   }
+
    on_submit(e) {
       e.preventDefault()
-      console.log('submit')
+
+      const {
+         handle,
+         company,
+         website,
+         location,
+         status,
+         skills,
+         githubusername,
+         bio,
+         twitter,
+         facebook,
+         linkedin,
+         youtube,
+         instagram,
+      } = this.state
+      const profile_data = {
+         handle,
+         company,
+         website,
+         location,
+         status,
+         skills,
+         githubusername,
+         bio,
+         twitter,
+         facebook,
+         linkedin,
+         youtube,
+         instagram,
+      }
+
+      this.props.create_profile(profile_data, this.props.history)
    }
 
    on_change(e) {
@@ -188,6 +228,7 @@ class CreateProfile extends Component {
 
                         <div className="mb-3">
                            <button
+                              type="button" // needed to not submit the form accidentally
                               className="btn btn-light"
                               onClick={e => {
                                  e.preventDefault()
@@ -225,4 +266,6 @@ const map_state_to_props = state => ({
    errors: state.errors,
 })
 
-export default connect(map_state_to_props)(CreateProfile)
+export default connect(map_state_to_props, { create_profile })(
+   withRouter(CreateProfile)
+)
