@@ -4,6 +4,7 @@ import TextFieldGroup from '../common/TextFieldGroup'
 import TextAreaFieldGroup from '../common/TextAreaFieldGroup'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { add_experience } from '../../actions/profileActions'
 
 class AddExperience extends Component {
    constructor(props) {
@@ -21,9 +22,25 @@ class AddExperience extends Component {
       }
    }
 
+   componentWillReceiveProps(nextProps) {
+      if (nextProps.errors) {
+         this.setState({ errors: nextProps.errors })
+      }
+   }
+
    on_submit(e) {
       e.preventDefault()
-      console.log('submitted!')
+      const experience_data = {
+         company: this.state.company,
+         title: this.state.title,
+         location: this.state.location,
+         from: this.state.from,
+         to: this.state.to,
+         current: this.state.current,
+         description: this.state.description,
+      }
+
+      this.props.add_experience(experience_data, this.props.history)
    }
 
    on_change(e) {
@@ -135,6 +152,7 @@ class AddExperience extends Component {
 AddExperience.propTypes = {
    profile: PropTypes.object.isRequired,
    errors: PropTypes.object.isRequired,
+   add_experience: PropTypes.func.isRequired,
 }
 
 const map_state_to_props = state => ({
@@ -142,4 +160,6 @@ const map_state_to_props = state => ({
    errors: state.errors,
 })
 
-export default connect(map_state_to_props)(withRouter(AddExperience))
+export default connect(map_state_to_props, { add_experience })(
+   withRouter(AddExperience)
+)
