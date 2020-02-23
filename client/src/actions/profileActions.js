@@ -5,6 +5,7 @@ import {
    CLEAR_CURRENT_PROFILE,
    GET_ERRORS,
    SET_CURRENT_USER,
+   GET_PROFILES,
 } from './types'
 
 // Get current profile
@@ -71,6 +72,25 @@ export const add_education = (education_data, history) => dispatch => {
          dispatch({
             type: GET_ERRORS,
             payload: err.response.data,
+         })
+      )
+}
+
+// Get all profiles
+export const get_profiles = () => dispatch => {
+   dispatch(set_profile_loading()) // dispatch a loading action while waiting for axios request
+   axios
+      .get('api/profile/all')
+      .then(res =>
+         dispatch({
+            type: GET_PROFILES,
+            payload: res.data,
+         })
+      )
+      .catch(err =>
+         dispatch({
+            type: GET_PROFILES,
+            payload: null, // it's ok to not have any profiles
          })
       )
 }
