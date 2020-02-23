@@ -75,6 +75,26 @@ export const add_education = (education_data, history) => dispatch => {
       )
 }
 
+// Delete experience
+export const delete_experience = id => dispatch => {
+   if (window.confirm('Are you sure? This cannot be undone.')) {
+      axios
+         .delete(`api/profile/experience/${id}`)
+         .then(res =>
+            dispatch({
+               type: GET_PROFILE,
+               payload: res.data, // the API returns the profile after we delete it
+            })
+         )
+         .catch(err =>
+            dispatch({
+               type: GET_ERRORS,
+               payload: err.response.data,
+            })
+         )
+   }
+}
+
 // Delete profile and user
 export const delete_account = () => dispatch => {
    if (window.confirm('Are you sure? This cannot be undone.')) {

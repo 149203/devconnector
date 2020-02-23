@@ -8,6 +8,7 @@ import {
 import Spinner from '../common/Spinner'
 import { Link } from 'react-router-dom'
 import ProfileActions from './ProfileActions'
+import Experience from './Experience'
 
 class Dashboard extends Component {
    componentDidMount() {
@@ -34,6 +35,7 @@ class Dashboard extends Component {
                   </p>
                   <ProfileActions />
                   {/* TODO: Experience & Education */}
+                  <Experience experience={profile.experience} />
                   <div style={{ marginTop: '60px' }}></div>
                   <button
                      className="btn btn-danger"
