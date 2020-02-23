@@ -32,6 +32,7 @@ class AddExperience extends Component {
 
    on_check(e) {
       this.setState({
+         // this is a quick way to toggle state: set it to it's opposite
          disabled: !this.state.disabled,
          current: !this.state.current,
       })
