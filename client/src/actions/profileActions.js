@@ -17,6 +17,15 @@ export const get_current_profile = () => dispatch => {
       .catch(err => dispatch({ type: GET_PROFILE, payload: {} })) // if there is an error (because the user has no profile), get and empty profile by passing an empty object as the payload
 }
 
+// Get profile by handle
+export const get_profile_by_handle = handle => dispatch => {
+   dispatch(set_profile_loading())
+   axios
+      .get(`/api/profile/handle/${handle}`)
+      .then(res => dispatch({ type: GET_PROFILE, payload: res.data }))
+      .catch(err => dispatch({ type: GET_PROFILE, payload: null })) // if there is an error (because the user has no profile), get and empty profile by passing an empty object as the payload
+}
+
 // Set profile loading
 export const set_profile_loading = () => {
    return {
