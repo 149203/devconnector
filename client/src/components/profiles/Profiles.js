@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux' // allows connecting redux to this react component
 import Spinner from '../common/Spinner'
 import { get_profiles } from '../../actions/profileActions'
+import ProfileItem from './ProfileItem'
 
 class Profiles extends Component {
    componentDidMount() {
@@ -17,7 +18,9 @@ class Profiles extends Component {
       if (profiles === null || loading) {
          profile_items = <Spinner />
       } else if (profiles.length > 0) {
-         profile_items = <h1>PROFILES HERE</h1>
+         profile_items = profiles.map(profile => (
+            <ProfileItem key={profile._id} profile={profile} />
+         ))
       } else {
          profile_items = <h4>No profiles found.</h4>
       }
